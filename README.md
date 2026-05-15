@@ -47,33 +47,29 @@ SESSION_SECRET=
 PORT=3000
 ```
 
-### 2. Instalar dependencias
+### 2. Instalar dependencias e iniciar el backend
 
-```bash
-# Backend
-cd backend
-npm install
-
-# Frontend
-cd ../frontend
-npm install
-```
-
-### 3. Iniciar el backend
+En la primera terminal:
 
 ```bash
 cd backend
-npm run dev 
+npm install
+node seed.js
+npm run dev
 ```
-Servidor en `http://localhost:3000`
+`node seed.js` inserta 5 categorías y 12 productos de ejemplo en MongoDB Atlas.  
+Servidor disponible en `http://localhost:3000`
 
-### 5. Iniciar el frontend
+### 3. Instalar dependencias e iniciar el frontend
+
+Abrir una **nueva terminal** y ejecutar:
 
 ```bash
 cd frontend
+npm install
 npm run dev
 ```
-App en `http://localhost:5173`
+App disponible en `http://localhost:5173`
 
 ---
 
