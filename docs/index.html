@@ -3,148 +3,341 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MercApp - Arquitectura de Despliegue</title>
+  <title>MercApp — Despliegue Unidad 4</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 960px; margin: 0 auto; padding: 2rem; background: #f8fafc; color: #1e293b; }
-    h1 { color: #1e1b4b; border-bottom: 3px solid #6366f1; padding-bottom: 0.5rem; }
-    h2 { color: #6366f1; margin-top: 2rem; }
-    h3 { color: #374151; }
-    a { color: #6366f1; }
-    .links { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1.5rem 0; }
-    .btn { display: inline-block; padding: 0.75rem 1.5rem; background: #6366f1; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; }
-    .btn:hover { background: #4f46e5; }
-    .btn-dark { background: #1e293b; }
-    .btn-dark:hover { background: #0f172a; }
-    .btn-green { background: #16a34a; }
-    .btn-green:hover { background: #15803d; }
-    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
-    th { background: #1e1b4b; color: white; padding: 0.65rem 1rem; text-align: left; }
-    td { padding: 0.65rem 1rem; border-bottom: 1px solid #e2e8f0; }
-    tr:nth-child(even) { background: #f1f5f9; }
-    code { background: #e2e8f0; padding: 0.15rem 0.4rem; border-radius: 4px; font-family: monospace; font-size: 0.85rem; }
-    pre { background: #1e293b; color: #e2e8f0; padding: 1.25rem; border-radius: 10px; overflow-x: auto; font-size: 0.85rem; line-height: 1.6; }
-    .arch-box { background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; margin: 1rem 0; }
-    .stack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0; }
-    .stack-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; text-align: center; }
-    .stack-card strong { display: block; color: #1e1b4b; margin-bottom: 0.25rem; }
-    footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; color: #94a3b8; font-size: 0.85rem; text-align: center; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f1f5f9;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e1b4b 0%, #4f46e5 100%);
+      color: white;
+      padding: 3rem 2rem 2rem;
+      text-align: center;
+    }
+    header h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px; }
+    header p { margin-top: 0.5rem; opacity: 0.85; font-size: 0.95rem; }
+    .badge {
+      display: inline-block;
+      margin-top: 1rem;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 0.3rem 1rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+    }
+
+    main { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.4rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
+    .btn-purple { background: #6366f1; color: white; }
+    .btn-green  { background: #16a34a; color: white; }
+    .btn-slate  { background: #1e293b; color: white; }
+    .btn-gray   { background: #475569; color: white; }
+
+    section { margin-top: 2.5rem; }
+    h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1e1b4b;
+      border-left: 4px solid #6366f1;
+      padding-left: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* Arquitectura visual */
+    .arch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .arch-node {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 1rem 2rem;
+      text-align: center;
+      width: 260px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    }
+    .arch-node .icon { font-size: 1.8rem; }
+    .arch-node .label { font-weight: 700; font-size: 0.95rem; margin-top: 0.3rem; color: #1e1b4b; }
+    .arch-node .sublabel { font-size: 0.78rem; color: #64748b; margin-top: 0.15rem; }
+    .arch-node.netlify  { border-color: #00ad9f; }
+    .arch-node.railway  { border-color: #7c3aed; }
+    .arch-node.mongo    { border-color: #16a34a; }
+    .arch-node.user     { border-color: #6366f1; }
+
+    .arch-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 4px 0;
+    }
+    .arch-arrow .line {
+      width: 2px;
+      height: 28px;
+      background: #cbd5e1;
+    }
+    .arch-arrow .tip {
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 8px solid #cbd5e1;
+    }
+    .arch-arrow .tag {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    /* Stack cards */
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .stack-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .stack-card .sc-icon { font-size: 1.4rem; }
+    .stack-card strong { display: block; color: #1e1b4b; font-size: 0.82rem; margin: 0.3rem 0 0.1rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stack-card span { font-size: 0.83rem; color: #475569; }
+
+    /* Tabla */
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    thead tr { background: #1e1b4b; color: white; }
+    th, td { padding: 0.65rem 1rem; text-align: left; }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    tbody tr:hover { background: #f1f5f9; }
+    code { background: #e2e8f0; padding: 0.1rem 0.4rem; border-radius: 4px; font-family: monospace; font-size: 0.82rem; }
+    .method { font-weight: 700; }
+    .get    { color: #2563eb; }
+    .post   { color: #16a34a; }
+    .put    { color: #d97706; }
+    .patch  { color: #7c3aed; }
+    .delete { color: #dc2626; }
+
+    /* Code blocks */
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1.2rem 1.5rem;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-size: 0.84rem;
+      line-height: 1.7;
+      margin-top: 0.75rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.82rem;
+      color: #94a3b8;
+      border-top: 1px solid #e2e8f0;
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.6rem; }
+      .btn { font-size: 0.82rem; padding: 0.55rem 1rem; }
+    }
   </style>
 </head>
 <body>
 
-  <h1>MercApp — Catálogo de Productos</h1>
+<header>
+  <h1>MercApp</h1>
+  <p>Catálogo de Productos — Unidad 4: Despliegue y Publicación</p>
+  <div class="badge">Jefferson Steve Tutillo Acero · Universidad Politécnica Salesiana</div>
+</header>
 
-  <p>
-    <strong>Estudiante:</strong> Jefferson Steve Tutillo Acero &nbsp;|&nbsp;
-    <strong>Materia:</strong> Aplicaciones Web &nbsp;|&nbsp;
-    <strong>Universidad Politécnica Salesiana</strong><br>
-    <strong>Tarea:</strong> Unidad 4 — Despliegue y publicación de aplicaciones
-  </p>
+<main>
 
   <div class="links">
-    <a href="https://tangerine-biscuit-040d3c.netlify.app" class="btn" target="_blank">Frontend (Netlify)</a>
-    <a href="https://actividad3-tutillo-jefferson-production.up.railway.app/health" class="btn btn-green" target="_blank">API Health Check</a>
-    <a href="https://actividad3-tutillo-jefferson-production.up.railway.app/api/products" class="btn btn-dark" target="_blank">API Products</a>
-    <a href="https://github.com/04Steve05/Actividad3-Tutillo-Jefferson" class="btn btn-dark" target="_blank">Repositorio GitHub</a>
+    <a href="https://tangerine-biscuit-040d3c.netlify.app" class="btn btn-purple" target="_blank">
+      🌐 Frontend
+    </a>
+    <a href="https://actividad3-tutillo-jefferson-production.up.railway.app/health" class="btn btn-green" target="_blank">
+      ✅ API Health
+    </a>
+    <a href="https://actividad3-tutillo-jefferson-production.up.railway.app/api/products" class="btn btn-slate" target="_blank">
+      📦 API Products
+    </a>
+    <a href="https://github.com/04Steve05/Actividad3-Tutillo-Jefferson" class="btn btn-gray" target="_blank">
+      💻 Repositorio
+    </a>
   </div>
 
-  <h2>Arquitectura de Despliegue</h2>
+  <section>
+    <h2>Arquitectura de Despliegue</h2>
+    <div class="arch">
 
-  <div class="arch-box">
-    <pre>
-  ┌─────────────┐        HTTPS        ┌──────────────────┐
-  │   Usuario   │ ──────────────────► │  Netlify (CDN)   │
-  └─────────────┘                     │  Vue 3 + Vite    │
-                                      │  SPA Frontend    │
-                                      └────────┬─────────┘
-                                               │ HTTPS + CORS
-                                               ▼
-                                      ┌──────────────────┐
-                                      │  Railway (PaaS)  │
-                                      │  Node.js + Express│
-                                      │  REST API        │
-                                      │  Helmet + CORS   │
-                                      └────────┬─────────┘
-                                               │ mongodb+srv
-                                               ▼
-                                      ┌──────────────────┐
-                                      │  MongoDB Atlas   │
-                                      │  M0 Free Cluster │
-                                      │  AWS us-east-1   │
-                                      └──────────────────┘
-    </pre>
-  </div>
+      <div class="arch-node user">
+        <div class="icon">👤</div>
+        <div class="label">Usuario</div>
+        <div class="sublabel">Navegador web</div>
+      </div>
 
-  <h2>Stack Tecnológico</h2>
-  <div class="stack-grid">
-    <div class="stack-card"><strong>Frontend</strong>Vue 3 + Vite + TypeScript</div>
-    <div class="stack-card"><strong>Routing</strong>Vue Router 4 (SPA)</div>
-    <div class="stack-card"><strong>Backend</strong>Node.js + Express</div>
-    <div class="stack-card"><strong>Base de datos</strong>MongoDB Atlas (M0)</div>
-    <div class="stack-card"><strong>Seguridad</strong>Helmet + CORS + Rate Limit</div>
-    <div class="stack-card"><strong>Autenticacion</strong>express-session + bcrypt</div>
-  </div>
+      <div class="arch-arrow">
+        <div class="tag">HTTPS</div>
+        <div class="line"></div>
+        <div class="tip"></div>
+      </div>
 
-  <h2>Endpoints de la API</h2>
-  <p>Base URL: <code>https://actividad3-tutillo-jefferson-production.up.railway.app/api</code></p>
+      <div class="arch-node netlify">
+        <div class="icon">🟢</div>
+        <div class="label">Netlify</div>
+        <div class="sublabel">Vue 3 + Vite · SPA</div>
+      </div>
 
-  <table>
-    <thead>
-      <tr><th>Metodo</th><th>Ruta</th><th>Descripcion</th><th>Response ejemplo</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>GET</td><td><code>/health</code></td><td>Estado de la API</td><td><code>{ "success": true }</code></td></tr>
-      <tr><td>GET</td><td><code>/api/products</code></td><td>Lista todos los productos</td><td><code>[{ "_id", "name", "price", ... }]</code></td></tr>
-      <tr><td>GET</td><td><code>/api/products/:id</code></td><td>Obtiene un producto</td><td><code>{ "_id", "name", "price", ... }</code></td></tr>
-      <tr><td>POST</td><td><code>/api/products</code></td><td>Crea un producto</td><td><code>{ "_id": "nuevo_id", ... }</code></td></tr>
-      <tr><td>PUT</td><td><code>/api/products/:id</code></td><td>Actualiza completo</td><td><code>{ "_id", "name": "actualizado" }</code></td></tr>
-      <tr><td>PATCH</td><td><code>/api/products/:id</code></td><td>Actualiza parcial</td><td><code>{ "_id", "stock": 5 }</code></td></tr>
-      <tr><td>DELETE</td><td><code>/api/products/:id</code></td><td>Elimina un producto</td><td><code>{ "message": "Producto eliminado" }</code></td></tr>
-      <tr><td>GET</td><td><code>/api/categories</code></td><td>Lista categorias</td><td><code>[{ "_id", "name" }]</code></td></tr>
-      <tr><td>POST</td><td><code>/api/categories</code></td><td>Crea una categoria</td><td><code>{ "_id", "name" }</code></td></tr>
-      <tr><td>DELETE</td><td><code>/api/categories/:id</code></td><td>Elimina categoria</td><td><code>{ "message": "Categoria eliminada" }</code></td></tr>
-    </tbody>
-  </table>
+      <div class="arch-arrow">
+        <div class="tag">HTTPS + CORS</div>
+        <div class="line"></div>
+        <div class="tip"></div>
+      </div>
 
-  <h2>Guia de Ejecucion Local</h2>
+      <div class="arch-node railway">
+        <div class="icon">🚂</div>
+        <div class="label">Railway</div>
+        <div class="sublabel">Node.js + Express · REST API</div>
+      </div>
 
-  <h3>Requisitos</h3>
-  <ul>
-    <li>Node.js v18 o superior</li>
-    <li>npm v9 o superior</li>
-    <li>Cuenta en MongoDB Atlas (o MongoDB instalado localmente)</li>
-  </ul>
+      <div class="arch-arrow">
+        <div class="tag">mongodb+srv</div>
+        <div class="line"></div>
+        <div class="tip"></div>
+      </div>
 
-  <h3>Backend</h3>
-  <pre>
-git clone https://github.com/04Steve05/Actividad3-Tutillo-Jefferson
+      <div class="arch-node mongo">
+        <div class="icon">🍃</div>
+        <div class="label">MongoDB Atlas</div>
+        <div class="sublabel">M0 Free · AWS us-east-1</div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Stack Tecnológico</h2>
+    <div class="stack-grid">
+      <div class="stack-card">
+        <div class="sc-icon">⚡</div>
+        <strong>Frontend</strong>
+        <span>Vue 3 + Vite + TypeScript</span>
+      </div>
+      <div class="stack-card">
+        <div class="sc-icon">🗺️</div>
+        <strong>Routing</strong>
+        <span>Vue Router 4 (SPA)</span>
+      </div>
+      <div class="stack-card">
+        <div class="sc-icon">🖥️</div>
+        <strong>Backend</strong>
+        <span>Node.js + Express</span>
+      </div>
+      <div class="stack-card">
+        <div class="sc-icon">🍃</div>
+        <strong>Base de datos</strong>
+        <span>MongoDB Atlas (M0)</span>
+      </div>
+      <div class="stack-card">
+        <div class="sc-icon">🛡️</div>
+        <strong>Seguridad</strong>
+        <span>Helmet + CORS + Rate Limit</span>
+      </div>
+      <div class="stack-card">
+        <div class="sc-icon">🔐</div>
+        <strong>Autenticación</strong>
+        <span>express-session + bcrypt</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Endpoints de la API</h2>
+    <p style="font-size:0.85rem;color:#64748b;margin-bottom:0.75rem;">
+      Base URL: <code>https://actividad3-tutillo-jefferson-production.up.railway.app/api</code>
+    </p>
+    <table>
+      <thead>
+        <tr><th>Método</th><th>Ruta</th><th>Descripción</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="method get">GET</span></td><td><code>/health</code></td><td>Estado de la API</td></tr>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/products</code></td><td>Lista todos los productos</td></tr>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/products/:id</code></td><td>Obtiene un producto</td></tr>
+        <tr><td><span class="method post">POST</span></td><td><code>/api/products</code></td><td>Crea un producto</td></tr>
+        <tr><td><span class="method put">PUT</span></td><td><code>/api/products/:id</code></td><td>Actualiza completo</td></tr>
+        <tr><td><span class="method patch">PATCH</span></td><td><code>/api/products/:id</code></td><td>Actualiza parcial</td></tr>
+        <tr><td><span class="method delete">DELETE</span></td><td><code>/api/products/:id</code></td><td>Elimina un producto</td></tr>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/categories</code></td><td>Lista categorías</td></tr>
+        <tr><td><span class="method post">POST</span></td><td><code>/api/categories</code></td><td>Crea una categoría</td></tr>
+        <tr><td><span class="method delete">DELETE</span></td><td><code>/api/categories/:id</code></td><td>Elimina categoría</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Ejecución Local</h2>
+
+    <h3 style="margin:1rem 0 0.25rem;color:#475569;font-size:0.9rem;text-transform:uppercase;letter-spacing:0.5px;">Backend</h3>
+    <pre>git clone https://github.com/04Steve05/Actividad3-Tutillo-Jefferson
 cd Actividad3-Tutillo-Jefferson/backend
 npm ci
 cp .env.example .env
-# Edita .env con tus valores reales (MONGODB_URI, SESSION_SECRET, etc.)
-npm run seed    # Carga categorias y productos de prueba
-npm run dev     # Servidor en http://localhost:3000
-  </pre>
+# Completa .env con MONGODB_URI y SESSION_SECRET
+npm run seed   # carga productos y categorías de prueba
+npm run dev    # http://localhost:3000</pre>
 
-  <h3>Frontend</h3>
-  <pre>
-cd Actividad3-Tutillo-Jefferson/frontend
+    <h3 style="margin:1.25rem 0 0.25rem;color:#475569;font-size:0.9rem;text-transform:uppercase;letter-spacing:0.5px;">Frontend</h3>
+    <pre>cd ../frontend
 npm ci
 cp .env.example .env.local
 # Edita .env.local: VITE_API_URL=http://localhost:3000
-npm run dev     # App en http://localhost:5173
-  </pre>
+npm run dev    # http://localhost:5173</pre>
+  </section>
 
-  <h3>Build para produccion</h3>
-  <pre>
-cd frontend
-npm run build   # Genera la carpeta dist/
-npm run preview # Previsualiza el build en localhost:4173
-  </pre>
+</main>
 
-  <footer>
-    MercApp — Unidad 4, Aplicaciones Web — Universidad Politecnica Salesiana 2025
-  </footer>
+<footer>
+  MercApp · Unidad 4 · Aplicaciones Web · Universidad Politécnica Salesiana 2025
+</footer>
 
 </body>
 </html>
