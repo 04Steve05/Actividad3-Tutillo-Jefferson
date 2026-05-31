@@ -10,7 +10,7 @@
     </router-link>
 
     <div class="card-body">
-      <p v-if="product.categoryId" class="card-category">{{ product.categoryId.name }}</p>
+      <p v-if="product.categoryId && typeof product.categoryId === 'object'" class="card-category">{{ (product.categoryId as { name: string }).name }}</p>
       <h3 class="card-title">
         <router-link :to="`/product/${product._id}`">{{ product.name }}</router-link>
       </h3>
