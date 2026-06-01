@@ -3,6 +3,15 @@
 **Universidad Politécnica Salesiana**  
 **Estudiante:** Jefferson Steve Tutillo Acero
 
+## URLs de Producción
+
+| Plataforma | URL |
+|------------|-----|
+| Frontend (Netlify) | https://tangerine-biscuit-040d3c.netlify.app |
+| Backend (Railway) | https://actividad3-tutillo-jefferson-production.up.railway.app |
+| Micrositio (GitHub Pages) | https://04Steve05.github.io/Actividad3-Tutillo-Jefferson/ |
+| Repositorio GitHub | https://github.com/04Steve05/Actividad3-Tutillo-Jefferson |
+
 ---
 
 ## Descripción
