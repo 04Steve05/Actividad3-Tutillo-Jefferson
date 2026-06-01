@@ -86,6 +86,7 @@ App disponible en `http://localhost:5173`
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
+| GET | `/health` | Estado de la API |
 | GET | `/api/products` | Lista todos los productos |
 | GET | `/api/products/:id` | Obtiene un producto |
 | POST | `/api/products` | Crea un producto |
